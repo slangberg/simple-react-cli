@@ -12,34 +12,52 @@ module.exports = class ComponentBuilder {
             name: 'component-name',
             type: 'input',
             message: 'Component Name:',
-            validate: function (input) {
-                if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
-                else return 'Project name may only include letters, numbers, underscores and hashes.';
+            validate: (input) => {
+                if (/[A-Za-z]/.test(input)) return true;
+                else return 'Component name may only include letters, numbers, underscores and hashes.';
             }
         }];
     }
 
-    generate() {
-        this.ask();
+    generate(name) {
+        if(!name){
+            this.ask();
+        }
+        else {
+            this.setUpGen(name);
+        }
+    }
+
+    validatetName(name){
+        if (/[A-Za-z]/.test(name)) {
+            this.setUpGen(name)
+        }
+        else {
+            console.log('Error: Name Must Only Contain Letters'.bold.red);
+        }
     }
 
     ask() {
         inquirer.prompt(this.questions)
             .then(answers => {
-                const CURR_DIR = process.cwd();
                 var componentName = answers['component-name'];
-                const templatePath = `${__dirname}/templates/component-template`;
-                componentName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
-                try {
-                    fs.mkdirSync(`${CURR_DIR}/${componentName}`);
-                    this.createDirectoryContents(templatePath, componentName, CURR_DIR);
-                }
-                catch (e) {
-                    if (e.code == 'EEXIST') {
-                        console.log(`Component Named ${componentName} Already Exists`.red.bold);
-                    }
-                }
+                this.setUpGen(componentName);
             });
+    }
+
+    setUpGen(componentName){
+        const CURR_DIR = process.cwd();
+        const templatePath = `${__dirname}/templates/component-template`;
+        componentName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
+        try {
+            fs.mkdirSync(`${CURR_DIR}/${componentName}`);
+            this.createDirectoryContents(templatePath, componentName, CURR_DIR);
+        }
+        catch (e) {
+            if (e.code == 'EEXIST') {
+                console.log(`Component Named ${componentName} Already Exists`.red.bold);
+            }
+        }
     }
 
     createDirectoryContents(templatePath, componentName, currentDirectory) {
