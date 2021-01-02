@@ -3,35 +3,45 @@
 const fs = require('fs');
 const path = require('path');
 const colors = require('colors');
-var componetGen = require('./components');
+const componentGen = require('./components');
+const templateGen = require('./templates');
 var argv = require('minimist')(process.argv.slice(2));
-const componentsFactory = new componetGen();
+const componentsFactory = new componentGen();
+const templateFactory = new templateGen()
 const inquirer = require('inquirer');
 
 const genQuestions = [{
     name: 'gen-type',
     type: 'list',
     message: 'What would you like to genrate?',
-    choices: ['Component', 'Template']
+    choices: ['Component', 'Theme']
 }];
 
 
 
 if (argv.g) {
     if (argv.c) {
-        componentsFactory.validatetName(argv.c)
+        componentsFactory.validateName(argv.c);
     }
     else if (argv.t) {
-
+        templateFactory.validateName(argv.t);
     }
     else {
-        inquirer.prompt(genQuestions)
-            .then(answer => {
-                var componentName = answer['gen-type'];
-                if ('Component') {
-                    componentsFactory.generate();
-                }
-            });
+        ask();
     }
+} else {
+    ask();
 };
 
+function ask(){
+    inquirer.prompt(genQuestions)
+    .then(answer => {
+        var choice = answer['gen-type'];
+        if (choice === 'Component') {
+            componentsFactory.generate();
+        }
+         else if (choice === 'Theme') {
+            templateFactory.generate();
+        }
+    });
+}

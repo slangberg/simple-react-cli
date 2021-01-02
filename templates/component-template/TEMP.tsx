@@ -7,7 +7,7 @@ class :REPLACE: extends React.Component<any, any> {
 
     public render() {
         return (
-            <span>:REPLACE: works</span>
+            <span> :REPLACE: works</span>
         );
     }
 }
